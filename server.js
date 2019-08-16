@@ -1,9 +1,9 @@
-const express = require("express");
-const mongoose = require("mongoose");
-const bodyParser = require("body-parser");
-const path = require("path");
+const express = require('express');
+const mongoose = require('mongoose');
+const bodyParser = require('body-parser');
+const path = require('path');
 
-const items = require("./routes/api/items");
+const items = require('./routes/api/items');
 
 const app = express();
 
@@ -11,24 +11,31 @@ const app = express();
 app.use(bodyParser.json());
 
 // DB Config
-const db = require("./config/keys").mongoURI;
+const db = require('./config/keys').mongoURI;
 
 // Connect to Mongo
 mongoose
   .connect(db, { useNewUrlParser: true })
-  .then(() => console.log("MongoDB Connected..."))
+  .then(() => console.log('MongoDB Connected...'))
   .catch(err => console.log(err));
 
 // Use Routes - First paramater requests should refer to second parameter file
-app.use("/api/items", items);
+app.use('/api/items', items);
 
-// Serve static assets if in production
-if (process.env.NODE_ENV === "production") {
-  // Set static folder
-  app.use(express.static("client/build"));
+// // Serve static assets if in production
+// if (process.env.NODE_ENV === "production") {
+//   // Set static folder
+//   app.use(express.static("client/build"));
 
-  app.get("*", (req, res) => {
-    res.sendFile(path.resolve(__dirname, "client", "build", "index.html"));
+//   app.get("*", (req, res) => {
+//     res.sendFile(path.resolve(__dirname, "client", "build", "index.html"));
+//   });
+// }
+
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static('client/build'));
+  app.get('*', (request, response) => {
+    response.sendFile(path.join(__dirname, 'client/build', 'index.html'));
   });
 }
 
