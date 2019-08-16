@@ -1,0 +1,10 @@
+/** PACKAGE DEPENDENCIES **
+express         for backend framework, routes , etc.
+body-parser     to read requests such as post requests
+mongoose        to interact with library
+concurrently    to run multiple npm scripts
+nodemon         to restart server automatically in dev
+
+/** STATE MANAGER **/ (others are like Flux)
+react-redux     state manager
+redux-thunk     middleware to dispatch from action to reducer
