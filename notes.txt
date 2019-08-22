@@ -1,9 +1,10 @@
 /** PACKAGE DEPENDENCIES **
 express         for backend framework, routes , etc.
 body-parser     to read requests such as post requests
-mongoose        to interact with library
+mongoose        to interact with database
 concurrently    to run multiple npm scripts
 nodemon         to restart server automatically in dev
+axios           to help make requests
 
 /** STATE MANAGER **/ (others are like Flux)
 react-redux     state manager

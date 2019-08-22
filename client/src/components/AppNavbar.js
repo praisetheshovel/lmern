@@ -1,47 +1,86 @@
-import React, {Component} from 'react';
+import React, { Component, Fragment } from 'react';
 import {
-    Collapse,
-    Navbar,
-    NavbarToggler,
-    NavbarBrand,
-    Nav,
-    NavItem,
-    NavLink,
-    Container
+  Collapse,
+  Navbar,
+  NavbarToggler,
+  NavbarBrand,
+  Nav,
+  NavItem,
+  Container
 } from 'reactstrap';
+import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
+import RegisterModal from './auth/RegisterModal';
+import LogoutModal from './auth/Logout';
+import LoginModal from './auth/Login';
 
-class AppNavBar extends Component{
-    state = {
-        isOpen: false
-    }
+class AppNavBar extends Component {
+  state = {
+    isOpen: false
+  };
 
-    toggle = () => {
-        this.setState({
-            isOpen: !this.state.isOpen
-        });
-    }
+  static propTypes = {
+    auth: PropTypes.object.isRequired
+  };
 
-    render() {
-        return (
-            <div>
-            <Navbar color="dark" dark expand="sm" className="mb-5">
-                <Container>
-                    <NavbarBrand href="/">Shopping List</NavbarBrand>
-                    <NavbarToggler onClick={this.toggle} />
-                    <Collapse isOpen={this.state.isOpen} navbar>
-                        <Nav className="ml-auto" navbar>
-                            <NavItem>
-                                <NavLink href="https://github.com/sironionknight">Github</NavLink>
-                            </NavItem>
-                        </Nav>
-                    </Collapse>
-                </Container>
-            </Navbar>
-        </div>
-        );
-    }
+  toggle = () => {
+    this.setState({
+      isOpen: !this.state.isOpen
+    });
+  };
+
+  render() {
+    const { token, isAuthenticated, user } = this.props.auth;
+    const authLinks = (
+      <Fragment>
+        <NavItem>
+          <span className="navbar-text mr-3">
+            <strong>{user ? `Lali-ho, ${user.name}!` : ''}</strong>
+          </span>
+        </NavItem>
+        <NavItem>
+          <LogoutModal />
+        </NavItem>
+      </Fragment>
+    );
+
+    const guestLinks = (
+      <Fragment>
+        <NavItem>
+          <LoginModal />
+        </NavItem>
+        <NavItem>
+          <RegisterModal />
+        </NavItem>
+      </Fragment>
+    );
+
+    return (
+      <div>
+        <Navbar color="dark" dark expand="sm" className="mb-5">
+          <Container>
+            <NavbarBrand href="/">
+              <img src="https://image0.flaticon.com/icons/png/128/1587/1587050.png" />
+              Dwarven Metallurgic Compendium
+            </NavbarBrand>
+            <NavbarToggler onClick={this.toggle} />
+            <Collapse isOpen={this.state.isOpen} navbar>
+              <Nav className="ml-auto" navbar>
+                {isAuthenticated ? authLinks : guestLinks}
+              </Nav>
+            </Collapse>
+          </Container>
+        </Navbar>
+      </div>
+    );
+  }
 }
 
+const mapStateToProps = state => ({
+  auth: state.auth
+});
 
-
-export default AppNavBar;
+export default connect(
+  mapStateToProps,
+  null
+)(AppNavBar);

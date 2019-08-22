@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
+const config = require('config');
+const jwt = require('jsonwebtoken');
 
 // User Model
 const User = require('../../models/User');
@@ -11,9 +13,9 @@ const User = require('../../models/User');
 router.post('/', (req, res) => {
   const { name, email, password } = req.body;
 
-  // FIeld Validation
+  // Field Validation
   if (!name || !email || !password) {
-    res.status(400).json({ msg: 'Please enter all fields' });
+    return res.status(400).json({ msg: 'Please enter all fields' });
   }
 
   // Check existing error
@@ -29,19 +31,30 @@ router.post('/', (req, res) => {
         password
       });
 
-      // Hashing user password to be stored in database
+      // Create salt & hash -- Hashing user password to be stored in database
       bcrypt.genSalt(10, (err, salt) => {
         bcrypt.hash(newUser.password, salt, (err, hash) => {
           if (err) throw err;
           newUser.password = hash;
+          // save() -- saves to MongoDB -- already makes sure that the id_ is not repeated
           newUser.save().then(user => {
-            res.json({
-              user: {
-                id: user.id,
-                user: user.name,
-                email: user.email
+            // sign() : first parameter = payload -- second parameter = secret -- optional paramaters in JSON format
+            jwt.sign(
+              { id: user.id },
+              config.get('jwtSecret'),
+              { expiresIn: 3600 },
+              (err, token) => {
+                if (err) throw err;
+                res.json({
+                  token: token,
+                  user: {
+                    id: user.id,
+                    name: user.name,
+                    email: user.email
+                  }
+                });
               }
-            });
+            );
           });
         });
       });
